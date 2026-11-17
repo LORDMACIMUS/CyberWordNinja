@@ -102,7 +102,10 @@
         <div class="flex items-center gap-2">
           <span class="font-pixel text-[10px] sm:text-xs text-[#00f5d4]">SCRIBE</span>
           <span id="hudFloorBadge" class="rounded-md border border-[#ff2a85] bg-[#ff2a85]/25 px-2 py-0.5 font-pixel text-[9px] sm:text-[10px] text-[#ff85b8]">
-            FLOOR 1
+            FLOOR 1/6
+          </span>
+          <span id="hudRunMultBadge" class="rounded-md border border-amber-400/70 bg-amber-400/20 px-2 py-0.5 font-pixel text-[9px] text-amber-300">
+            FORGE x1.00
           </span>
         </div>
         <div class="flex items-center gap-2.5">
@@ -111,27 +114,32 @@
         </div>
       </div>
 
-      <!-- Center: Floor Progress Strip & Active Sensei / Blitz Status -->
-      <div class="order-3 w-full sm:order-2 sm:w-auto sm:min-w-[270px] flex flex-col items-center gap-1.5">
+      <!-- Center: Floor Progress Strip, Live Breakdown Banner & Sensei/Blitz Status -->
+      <div class="order-3 w-full sm:order-2 sm:w-auto sm:min-w-[300px] sm:max-w-md flex flex-col items-center gap-1.5">
         <div class="w-full rounded-2xl border border-[#ff2a85]/60 bg-[#0d0426]/85 px-3.5 py-2 shadow-[0_0_15px_rgba(255,42,133,0.3)] backdrop-blur-md">
           <div class="flex items-center justify-between text-[11px] font-bold tracking-wide text-pink-200 mb-1">
-            <span id="tierLabel" class="text-[#00f5d4]">TIER I: APPRENTICE</span>
+            <span id="tierLabel" class="text-[#00f5d4]">TIER I: CORE AFFIXES</span>
             <span id="waveCounter" class="font-pixel text-[9px] text-amber-300">WAVE 1/5</span>
           </div>
-          <!-- Neon Progress Bar -->
           <div class="h-2.5 w-full overflow-hidden rounded-full border border-white/15 bg-[#190840]">
             <div id="floorProgressBar" class="h-full w-1/5 rounded-full bg-gradient-to-r from-[#00f5d4] via-[#ff2a85] to-[#ffe600] transition-all duration-300"></div>
           </div>
         </div>
 
-        <!-- Active Sensei / Blitz HUD Pill -->
+        <!-- Live Morpheme Breakdown HUD Banner (Triggered on Every Sliced Word) -->
+        <div id="liveBreakdownBanner" class="hidden w-full rounded-xl border-2 border-[#00f5d4] bg-[#0b0322]/95 px-3 py-1.5 text-center shadow-[0_0_20px_rgba(0,245,212,0.5)]">
+          <div id="liveBreakdownHeader" class="font-pixel text-[9px] sm:text-[10px] text-[#ffe600]">UNFAIR = "NOT FAIR"</div>
+          <div id="liveBreakdownParts" class="mt-1 flex flex-wrap items-center justify-center gap-1 text-[11px] font-semibold"></div>
+        </div>
+
+        <!-- Active Sensei / Blitz / Boss HUD Pill -->
         <div id="hudModeBanner" class="hidden w-full rounded-xl border-2 border-amber-400 bg-[#1a093b]/95 px-3 py-1.5 text-center shadow-[0_0_20px_rgba(255,214,10,0.5)]">
           <div id="hudModeTitle" class="font-pixel text-[9px] text-amber-300">SENSEI CHALLENGE</div>
           <div id="hudModeDesc" class="mt-0.5 text-xs sm:text-sm font-bold text-white">Slice the word meaning "NOT"!</div>
         </div>
       </div>
 
-      <!-- Right: Score, Streak & Utility Buttons -->
+      <!-- Right: Score, Word Book Progress & Utility Buttons -->
       <div class="order-2 sm:order-3 flex items-center gap-2">
         <div class="rounded-2xl border-2 border-[#ff2a85]/70 bg-[#0d0426]/85 px-3.5 py-2 text-right shadow-[0_0_16px_rgba(255,42,133,0.35)] backdrop-blur-md">
           <div class="flex items-center justify-end gap-1.5">
@@ -141,9 +149,10 @@
           <div id="scoreDisplay" class="mt-0.5 font-pixel text-sm sm:text-base text-white">0</div>
         </div>
 
-        <!-- Word Book Archive Button -->
-        <button id="wordBookBtn" class="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-amber-400/70 bg-[#0d0426]/90 text-amber-300 shadow-[0_0_14px_rgba(255,214,10,0.3)] hover:border-amber-300 hover:text-white active:scale-95" title="Great Word Book Archive">
-          <span class="text-lg">📖</span>
+        <!-- Persistent Great Word Book Archive Button -->
+        <button id="wordBookBtn" class="pointer-events-auto flex h-11 flex-col items-center justify-center rounded-2xl border-2 border-amber-400/80 bg-[#0d0426]/90 px-2.5 text-amber-300 shadow-[0_0_14px_rgba(255,214,10,0.3)] hover:border-amber-200 hover:text-white active:scale-95" title="Great Word Book Archive">
+          <span class="text-sm leading-none">📖</span>
+          <span id="hudWordBookCount" class="mt-0.5 font-pixel text-[8px] text-amber-200">0/78</span>
         </button>
 
         <!-- Synthwave Audio Toggle -->
@@ -175,9 +184,20 @@
         SCRIBE — THE CYBER NINJA
       </div>
 
+      <!-- Persistent Progress Pill on Title Screen -->
+      <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
+        <button id="titleWordBookBtn" class="flex items-center gap-2 rounded-full border border-amber-400/70 bg-amber-400/15 px-3.5 py-1.5 text-xs font-bold text-amber-200 transition hover:bg-amber-400/25">
+          <span>📖 Great Word Book:</span>
+          <span id="titleWordBookProgress" class="font-pixel text-[10px] text-amber-300">0/78</span>
+        </button>
+        <div class="rounded-full border border-[#00f5d4]/50 bg-[#00f5d4]/10 px-3.5 py-1.5 text-xs font-bold text-cyan-200">
+          🏆 Best Run: <span id="titleBestScore" class="font-pixel text-[10px] text-[#00f5d4]">0</span>
+        </div>
+      </div>
+
       <!-- Character Motivation / Lore Box -->
       <div class="mt-4 rounded-2xl border border-[#00f5d4]/35 bg-[#130636]/90 p-3.5 text-left text-xs sm:text-sm text-indigo-100 leading-relaxed">
-        <span class="font-bold text-[#00f5d4]">MISSION BRIEF:</span> Digital Corruptors have scrambled Neon City's <span class="font-bold text-amber-300">Great Word Book</span> and flooded the skyline with fake trap words! As <span class="font-bold text-[#ff5ca8]">Scribe</span>, ascend the Lexicon Tower, slice true morphemes along their glowing cyan seams, and reclaim every lost root.
+        <span class="font-bold text-[#00f5d4]">MISSION BRIEF:</span> Digital Corruptors have scrambled Neon City's <span class="font-bold text-amber-300">Great Word Book</span>! As <span class="font-bold text-[#ff5ca8]">Scribe</span>, ascend all <span class="font-bold text-[#00f5d4]">6 Floors of Lexicon Tower</span>, forge your Run Multiplier after each floor, and claim the Summit Restoration Bonus!
       </div>
 
       <!-- Curriculum Tier Selector -->
@@ -201,16 +221,49 @@
         </div>
       </div>
 
-      <button id="startBtn" class="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#00f5d4] via-[#ff2a85] to-[#ffe600] px-6 py-4 font-pixel text-xs sm:text-sm text-[#07011a] shadow-[0_0_25px_rgba(255,42,133,0.75)] transition hover:scale-[1.02] active:scale-95">
+      <button id="startBtn" class="mt-5 w-full rounded-2xl bg-gradient-to-r from-[#00f5d4] via-[#ff2a85] to-[#ffe600] px-6 py-4 font-pixel text-xs sm:text-sm text-[#07011a] shadow-[0_0_25px_rgba(255,42,133,0.75)] transition hover:scale-[1.02] active:scale-95">
         ASCEND LEXICON TOWER
       </button>
+    </div>
+  </div>
+
+  <!-- Timed End-of-Floor Morpheme Forge Modal (15s, 3 Questions) -->
+  <div id="forgeModal" class="fixed inset-0 z-30 hidden items-center justify-center bg-[#07011a]/88 p-4 backdrop-blur-md">
+    <div class="w-full max-w-xl rounded-3xl border-2 border-amber-400 bg-[#0b0322]/95 p-6 sm:p-7 text-center shadow-[0_0_45px_rgba(255,214,10,0.45)]">
+      <div class="flex items-center justify-between">
+        <span class="rounded-full border border-amber-400/60 bg-amber-400/15 px-3 py-1 font-pixel text-[9px] text-amber-300">
+          MORPHEME FORGE
+        </span>
+        <span id="forgeQuestionCounter" class="font-pixel text-[10px] text-cyan-300">Q 1 / 3</span>
+        <span id="forgeMultBadge" class="rounded-full border border-[#00f5d4] bg-[#00f5d4]/20 px-3 py-1 font-pixel text-[9px] text-[#00f5d4]">
+          RUN x1.00
+        </span>
+      </div>
+
+      <!-- 15-Second Countdown Bar -->
+      <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full border border-white/15 bg-[#190840]">
+        <div id="forgeTimerBar" class="h-full w-full rounded-full bg-gradient-to-r from-[#ffe600] via-[#ff2a85] to-[#00f5d4] transition-all duration-100"></div>
+      </div>
+      <div id="forgeTimerText" class="mt-1 font-pixel text-[9px] text-amber-300">15.0s REMAINING</div>
+
+      <h2 class="mt-3 font-pixel text-sm sm:text-base text-white">DEFINE THE MORPHEME</h2>
+      <p class="mt-1 text-xs text-pink-200">Correct: <span class="font-bold text-[#00f5d4]">+0.50x</span> Run Multiplier • Wrong: <span class="font-bold text-rose-400">-0.25x</span></p>
+
+      <div id="forgePromptCard" class="mt-4 rounded-2xl border-2 border-[#ff2a85] bg-[#140738] p-4">
+        <div id="forgeContextWord" class="text-xs font-semibold uppercase tracking-wider text-pink-300">FROM WORD: "UNFAIR"</div>
+        <div id="forgeTargetMorpheme" class="mt-1 font-pixel text-xl sm:text-2xl text-[#00f5d4]">un-</div>
+        <div id="forgeRoleBadge" class="mt-1 inline-block rounded bg-amber-400/20 px-2 py-0.5 text-[11px] font-bold uppercase text-amber-300">PREFIX</div>
+      </div>
+
+      <div id="forgeChoices" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+      <div id="forgeFeedback" class="mt-3 min-h-[20px] text-xs font-bold text-cyan-200"></div>
     </div>
   </div>
 
   <!-- Relic Draft Modal (Between Floors) -->
   <div id="relicModal" class="fixed inset-0 z-30 hidden items-center justify-center bg-[#07011a]/85 p-4 backdrop-blur-md">
     <div class="w-full max-w-3xl rounded-3xl border-2 border-[#00f5d4] bg-[#0b0322]/95 p-6 sm:p-8 text-center shadow-[0_0_40px_rgba(0,245,212,0.45)]">
-      <div class="font-pixel text-[10px] text-[#ffe600]">TOWER FLOOR CLEARED!</div>
+      <div class="font-pixel text-[10px] text-[#ffe600]">FORGE COMPLETE • FLOOR CLEARED!</div>
       <h2 class="mt-2 font-pixel text-lg sm:text-2xl text-white">SELECT A CYBER-RELIC</h2>
       <p class="mt-1.5 text-xs sm:text-sm text-cyan-200">Enhance Scribe's plasma katana before climbing higher.</p>
 
@@ -218,20 +271,20 @@
     </div>
   </div>
 
-  <!-- Great Word Book Archive Modal -->
-  <div id="wordBookModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-[#07011a]/85 p-4 backdrop-blur-md">
-    <div class="flex max-h-[84vh] w-full max-w-2xl flex-col rounded-3xl border-2 border-amber-400 bg-[#0b0322]/95 p-5 sm:p-6 shadow-[0_0_40px_rgba(255,214,10,0.4)]">
+  <!-- Persistent Great Word Book Archive Modal -->
+  <div id="wordBookModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-[#07011a]/88 p-4 backdrop-blur-md">
+    <div class="flex max-h-[86vh] w-full max-w-3xl flex-col rounded-3xl border-2 border-amber-400 bg-[#0b0322]/95 p-5 sm:p-6 shadow-[0_0_40px_rgba(255,214,10,0.4)]">
       <div class="flex items-center justify-between border-b border-white/15 pb-3">
         <div>
-          <div class="font-pixel text-[10px] text-amber-300">RECLAIMED LEXICON</div>
+          <div class="font-pixel text-[10px] text-amber-300">PERSISTENT LEXICON ARCHIVE</div>
           <h2 class="mt-1 font-pixel text-base sm:text-xl text-white">THE GREAT WORD BOOK</h2>
         </div>
         <button id="closeWordBookBtn" class="rounded-xl border border-pink-400/60 bg-pink-500/20 px-3 py-1.5 font-pixel text-[10px] text-pink-200 hover:bg-pink-500/40">
           CLOSE
         </button>
       </div>
-      <div id="wordBookStats" class="mt-2 text-xs text-cyan-200"></div>
-      <div id="wordBookList" class="wordbook-scroll mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5 overflow-y-auto pr-1"></div>
+      <div id="wordBookStats" class="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-cyan-200"></div>
+      <div id="wordBookList" class="wordbook-scroll mt-3 space-y-4 overflow-y-auto pr-1"></div>
     </div>
   </div>
 
@@ -241,27 +294,82 @@
       <div class="font-pixel text-[10px] text-[#ff2a85]">SYSTEM OVERLOAD</div>
       <h2 class="mt-2 font-pixel text-xl sm:text-2xl text-white">SCRIBE REBOOTING</h2>
 
-      <div class="mt-5 grid grid-cols-3 gap-2 rounded-2xl border border-[#00f5d4]/30 bg-[#140738] p-3">
+      <div class="mt-4 grid grid-cols-3 gap-2 rounded-2xl border border-[#00f5d4]/30 bg-[#140738] p-3">
         <div>
-          <div class="text-[11px] uppercase text-pink-300">Score</div>
+          <div class="text-[11px] uppercase text-pink-300">Final Score</div>
           <div id="finalScore" class="mt-1 font-pixel text-xs sm:text-sm text-[#00f5d4]">0</div>
         </div>
         <div>
-          <div class="text-[11px] uppercase text-pink-300">Floor</div>
-          <div id="finalFloor" class="mt-1 font-pixel text-xs sm:text-sm text-[#ffe600]">1</div>
+          <div class="text-[11px] uppercase text-pink-300">Word Book</div>
+          <div id="finalWordBook" class="mt-1 font-pixel text-xs sm:text-sm text-amber-300">0/78</div>
         </div>
         <div>
-          <div class="text-[11px] uppercase text-pink-300">Streak</div>
-          <div id="finalStreak" class="mt-1 font-pixel text-xs sm:text-sm text-pink-300">0</div>
+          <div class="text-[11px] uppercase text-pink-300">Floor</div>
+          <div id="finalFloor" class="mt-1 font-pixel text-xs sm:text-sm text-pink-300">1/6</div>
         </div>
       </div>
 
       <!-- Last Word / Mistake Analysis Box -->
       <div id="lastBreakdownBox" class="mt-4 rounded-2xl border border-[#00f5d4]/40 bg-[#0d1f3a]/60 p-3.5 text-left text-xs sm:text-sm text-cyan-100 leading-relaxed"></div>
 
-      <button id="restartBtn" class="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#00f5d4] via-[#ff2a85] to-[#ffe600] px-6 py-4 font-pixel text-xs sm:text-sm text-[#07011a] shadow-lg transition hover:scale-[1.02] active:scale-95">
-        RE-ENTER TOWER
-      </button>
+      <div class="mt-5 flex flex-col gap-2.5">
+        <button id="gameOverWordBookBtn" class="w-full rounded-2xl border-2 border-amber-400/80 bg-amber-400/15 px-4 py-3 font-pixel text-[10px] sm:text-xs text-amber-200 transition hover:bg-amber-400/25">
+          📖 INSPECT GREAT WORD BOOK
+        </button>
+        <button id="restartBtn" class="w-full rounded-2xl bg-gradient-to-r from-[#00f5d4] via-[#ff2a85] to-[#ffe600] px-6 py-4 font-pixel text-xs sm:text-sm text-[#07011a] shadow-lg transition hover:scale-[1.02] active:scale-95">
+          RE-ENTER TOWER
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tower Summit Victory Modal (Floor 6 Cleared) -->
+  <div id="victoryModal" class="fixed inset-0 z-30 hidden items-center justify-center bg-[#07011a]/88 p-4 backdrop-blur-md">
+    <div class="neon-panel w-full max-w-lg rounded-3xl border-2 border-[#ffe600] bg-[#0b0322]/95 p-6 sm:p-8 text-center">
+      <div class="inline-block rounded-full border border-[#ffe600] bg-[#ffe600]/20 px-3.5 py-1 font-pixel text-[9px] text-[#ffe600]">
+        LEXICON TOWER RESTORED!
+      </div>
+      <h2 class="mt-3 font-pixel text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#00f5d4] via-[#ffe600] to-[#ff2a85]">
+        SUMMIT VICTORY
+      </h2>
+      <p class="mt-2 text-xs sm:text-sm text-cyan-100">
+        Scribe has purged the Corruptors atop Neon City! Your forged Run Multiplier multiplied the <span class="font-bold text-amber-300">+2,500 Summit Restoration Bonus</span>!
+      </p>
+
+      <div class="mt-4 rounded-2xl border border-amber-400/50 bg-[#140738] p-3.5 text-xs sm:text-sm">
+        <div class="flex justify-between text-pink-200">
+          <span>Base Summit Bonus:</span>
+          <span class="font-bold text-white">+2,500 pts</span>
+        </div>
+        <div class="mt-1 flex justify-between text-cyan-200">
+          <span>Forged Run Multiplier:</span>
+          <span id="victoryMultDisplay" class="font-pixel text-xs text-[#00f5d4]">x2.50</span>
+        </div>
+        <div class="mt-1 flex justify-between border-t border-white/15 pt-1.5 text-amber-300 font-bold">
+          <span>Summit Bonus Awarded:</span>
+          <span id="victoryBonusAwarded" class="font-pixel text-xs">+6,250</span>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-2.5 rounded-2xl border border-[#00f5d4]/35 bg-[#140738] p-3">
+        <div>
+          <div class="text-[11px] uppercase text-pink-300">Total Run Score</div>
+          <div id="victoryFinalScore" class="mt-1 font-pixel text-sm sm:text-base text-[#00f5d4]">0</div>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase text-pink-300">Great Word Book</div>
+          <div id="victoryWordBook" class="mt-1 font-pixel text-sm sm:text-base text-amber-300">0/78</div>
+        </div>
+      </div>
+
+      <div class="mt-5 flex flex-col gap-2.5">
+        <button id="victoryWordBookBtn" class="w-full rounded-2xl border-2 border-amber-400/80 bg-amber-400/15 px-4 py-3 font-pixel text-[10px] sm:text-xs text-amber-200 transition hover:bg-amber-400/25">
+          📖 VIEW GREAT WORD BOOK
+        </button>
+        <button id="victoryRestartBtn" class="w-full rounded-2xl bg-gradient-to-r from-[#00f5d4] via-[#ff2a85] to-[#ffe600] px-6 py-4 font-pixel text-xs sm:text-sm text-[#07011a] shadow-lg transition hover:scale-[1.02] active:scale-95">
+          PLAY NEW RUN
+        </button>
+      </div>
     </div>
   </div>
 
@@ -272,6 +380,10 @@
      * Complete Single-File Synthwave Roguelike Morphology Game
      * =========================================================================
      */
+
+    const STORAGE_KEY_WORDBOOK = 'morpheme_ninja_wordbook_v1';
+    const STORAGE_KEY_BESTSCORE = 'morpheme_ninja_bestscore_v1';
+    const MAX_TOWER_FLOORS = 6;
 
     // -------------------------------------------------------------------------
     // 1. 78-WORD MULTI-TIER MORPHEME DATABASE + BOSSES + 4 TRAP CATEGORIES
@@ -363,6 +475,10 @@
       ]
     };
 
+    // Total 78 Core Words across Tiers I-III
+    const TOTAL_WORDBOOK_COUNT =
+      WORD_DATABASE.set1.length + WORD_DATABASE.set2.length + WORD_DATABASE.set3.length;
+
     // 3-Morpheme Double-Cut Boss Words (Every 3rd Floor)
     const BOSS_WORDS = [
       { word: 'unbreakable', meaning: 'not able to break', parts: [{ text: 'un-', role: 'prefix', gloss: 'not' }, { text: 'break', role: 'root', gloss: 'shatter' }, { text: '-able', role: 'suffix', gloss: 'able to' }] },
@@ -375,9 +491,9 @@
       { word: 'misunderstanding', meaning: 'wrongly grasping meaning', parts: [{ text: 'mis-', role: 'prefix', gloss: 'wrongly' }, { text: 'understand', role: 'root', gloss: 'grasp' }, { text: '-ing', role: 'suffix', gloss: 'ongoing' }] }
     ];
 
-    // Disguised Morphological Traps (Pseudo-affixes, Solid Roots, Illegal Combos, Corrupted Spellings)
+    // 4 Disguised Morphological Trap Categories
     const TRAP_WORDS = [
-      // Pseudo-affix imposters
+      // 1. Pseudo-affix imposters
       { word: 'uncle', category: 'Pseudo-Affix Imposter', explanation: '"un-" is NOT a prefix in "uncle" — it is a single indivisible root!' },
       { word: 'under', category: 'Pseudo-Affix Imposter', explanation: '"un-" is part of the root word "under", not the prefix "not".' },
       { word: 'reach', category: 'Pseudo-Affix Imposter', explanation: '"re-" is NOT a prefix in "reach" — there is no root word "ach"!' },
@@ -385,32 +501,103 @@
       { word: 'hammer', category: 'Pseudo-Affix Imposter', explanation: '"-er" is NOT a suffix in "hammer" — it is a single root noun.' },
       { word: 'silver', category: 'Pseudo-Affix Imposter', explanation: '"-er" is part of the element root "silver", not a suffix.' },
       { word: 'distance', category: 'Pseudo-Affix Imposter', explanation: '"dis-" here is not a separable negative prefix for a standalone root.' },
-      // Solid indivisible roots
-      { word: 'elephant', category: 'Indivisible Root', explanation: '"elephant" is a single root morpheme and cannot be split.' },
-      { word: 'umbrella', category: 'Indivisible Root', explanation: '"umbrella" is a single root morpheme (not "um + brella").' },
-      { word: 'crocodile', category: 'Indivisible Root', explanation: '"crocodile" is one single root word with no affixes.' },
-      // Illegal affix combinations
-      { word: 'unjump', category: 'Corrupted Combo', explanation: 'Corruptor glitch! "un-" does not attach to "jump" in standard English.' },
-      { word: 'prehappy', category: 'Corrupted Combo', explanation: 'Corruptor glitch! "pre-" does not attach to the adjective "happy".' },
-      { word: 'joyed', category: 'Corrupted Combo', explanation: 'Corruptor glitch! "joy" takes "-ful" or "en-joyed", not bare "joyed".' },
-      // Corrupted spellings
+      // 2. Monomorphemic solid roots
+      { word: 'elephant', category: 'Monomorphemic Root', explanation: '"elephant" is a single root morpheme and cannot be split.' },
+      { word: 'umbrella', category: 'Monomorphemic Root', explanation: '"umbrella" is a single root morpheme (not "um + brella").' },
+      { word: 'crocodile', category: 'Monomorphemic Root', explanation: '"crocodile" is one single root word with no affixes.' },
+      // 3. Illegal affix combinations
+      { word: 'unjump', category: 'Illegal Affix Combo', explanation: 'Corruptor glitch! "un-" does not attach to "jump" in standard English.' },
+      { word: 'prehappy', category: 'Illegal Affix Combo', explanation: 'Corruptor glitch! "pre-" does not attach to the adjective "happy".' },
+      { word: 'joyed', category: 'Illegal Affix Combo', explanation: 'Corruptor glitch! "joy" takes "-ful" or "en-joyed", not bare "joyed".' },
+      // 4. Corrupted spellings
       { word: 'teleskope', category: 'Corrupted Spelling', explanation: 'Corrupted spelling! The Greek root for "see" is spelled "-scope", not "-skope".' },
       { word: 'submareen', category: 'Corrupted Spelling', explanation: 'Corrupted spelling! The root for "sea" is spelled "-marine", not "-mareen".' },
       { word: 'konstrukt', category: 'Corrupted Spelling', explanation: 'Corrupted spelling! The Latin root is spelled "construct", not "konstrukt".' }
     ];
 
-    // Roguelike Cyber-Relics Pool
+    // 8 Neon Roguelike Relics
     const RELIC_POOL = [
-      { id: 'plasma_katana', name: 'Plasma Katana', icon: '⚡', desc: '+45% Perfect Cut width & +50 bonus pts on every clean seam slice.' },
-      { id: 'chrono_visor', name: 'Chrono Visor', icon: '⏳', desc: 'Slows flying scroll gravity by 18% for razor-sharp precision.' },
-      { id: 'aegis_dome', name: 'Aegis Matrix', icon: '🛡️', desc: 'Grants +1 Energy Shield now and +1 shield at the start of every floor.' },
-      { id: 'synth_amp', name: 'Synth Overdrive', icon: '🔥', desc: 'Combo multiplier climbs twice as fast and boosts all points +25%.' },
-      { id: 'nano_stim', name: 'Nano Med-Stim', icon: '❤️', desc: 'Restores +2 HP immediately and increases Scribe\'s Max HP by +1.' },
-      { id: 'golden_lens', name: 'Golden Root Lens', icon: '🌟', desc: 'Golden Root Orbs appear twice as often and award +150 bonus pts.' }
+      { id: 'chrono_blade', name: 'Chrono Blade', icon: '⏳', desc: 'Slows flying scroll gravity by 18% for razor-sharp seam precision.' },
+      { id: 'laser_edge', name: 'Laser Edge', icon: '⚡', desc: '+45% Clean Seam cut width & +50 bonus pts on every clean seam slice.' },
+      { id: 'aegis_deflector', name: 'Aegis Deflector', icon: '🛡️', desc: 'Grants +1 Aegis Shield now and +1 shield at the start of every floor.' },
+      { id: 'sensei_eye', name: "Sensei's 3rd Eye", icon: '👁️', desc: 'Combo multiplier climbs twice as fast and boosts all points +25%.' },
+      { id: 'vampiric_scroll', name: 'Vampiric Scroll', icon: '🩸', desc: 'Every 5th consecutive clean seam cut restores +1 HP (or +1 Shield at max HP).' },
+      { id: 'twin_slash', name: 'Twin Slash', icon: '⚔️', desc: 'Every 3rd word sliced unleashes a twin energy wave worth +150 bonus pts.' },
+      { id: 'phoenix_feather', name: 'Phoenix Feather', icon: '🪶', desc: 'Prevents fatal system overload once per run, reviving Scribe with 3 HP!' },
+      { id: 'cyber_heart', name: 'Cyber Heart', icon: '💖', desc: 'Increases Scribe\'s Max HP by +1 and restores +2 HP immediately.' }
     ];
 
     // -------------------------------------------------------------------------
-    // 2. PROCEDURAL 16-BIT SYNTHWAVE WEB AUDIO ENGINE
+    // 2. PERSISTENT GREAT WORD BOOK STORAGE (localStorage)
+    // -------------------------------------------------------------------------
+    let persistentWordBook = {}; // { [word]: { stars: 1..3, slices: number } }
+    let persistentBestScore = 0;
+
+    function loadPersistentProgress() {
+      try {
+        const rawBook = localStorage.getItem(STORAGE_KEY_WORDBOOK);
+        if (rawBook) {
+          const parsed = JSON.parse(rawBook);
+          if (parsed && typeof parsed === 'object') {
+            persistentWordBook = parsed;
+          }
+        }
+        const rawScore = localStorage.getItem(STORAGE_KEY_BESTSCORE);
+        if (rawScore) {
+          persistentBestScore = Math.max(0, parseInt(rawScore, 10) || 0);
+        }
+      } catch (err) {
+        console.warn('Storage unavailable, using in-memory session storage:', err);
+      }
+      refreshWordBookBadges();
+    }
+
+    function savePersistentProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY_WORDBOOK, JSON.stringify(persistentWordBook));
+        localStorage.setItem(STORAGE_KEY_BESTSCORE, String(persistentBestScore));
+      } catch (err) {
+        console.warn('Unable to persist progress:', err);
+      }
+      refreshWordBookBadges();
+    }
+
+    function recordWordBookMastery(word, isCleanCut = false, forgeMastered = false) {
+      const key = word.toLowerCase();
+      const existing = persistentWordBook[key] || { stars: 0, slices: 0 };
+      existing.slices += 1;
+      const earnedStars = forgeMastered ? 3 : isCleanCut ? 2 : 1;
+      existing.stars = Math.min(3, Math.max(existing.stars, earnedStars));
+      persistentWordBook[key] = existing;
+      savePersistentProgress();
+    }
+
+    function getUnlockedWordCount() {
+      const allTierWords = new Set([
+        ...WORD_DATABASE.set1.map(w => w.word),
+        ...WORD_DATABASE.set2.map(w => w.word),
+        ...WORD_DATABASE.set3.map(w => w.word)
+      ]);
+      let count = 0;
+      allTierWords.forEach(w => {
+        if (persistentWordBook[w]) count++;
+      });
+      return count;
+    }
+
+    function refreshWordBookBadges() {
+      const unlocked = getUnlockedWordCount();
+      const ratioText = `${unlocked}/${TOTAL_WORDBOOK_COUNT}`;
+      const titleBadge = document.getElementById('titleWordBookProgress');
+      const hudBadge = document.getElementById('hudWordBookCount');
+      const bestScoreEl = document.getElementById('titleBestScore');
+      if (titleBadge) titleBadge.textContent = ratioText;
+      if (hudBadge) hudBadge.textContent = ratioText;
+      if (bestScoreEl) bestScoreEl.textContent = persistentBestScore.toLocaleString();
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. PROCEDURAL 16-BIT SYNTHWAVE WEB AUDIO ENGINE
     // -------------------------------------------------------------------------
     class SynthwaveAudio {
       constructor() {
@@ -517,7 +704,7 @@
     const audio = new SynthwaveAudio();
 
     // -------------------------------------------------------------------------
-    // 3. CANVAS, SKYLINE & GAME STATE INITIALIZATION
+    // 4. CANVAS, SKYLINE & GAME STATE INITIALIZATION
     // -------------------------------------------------------------------------
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -530,7 +717,6 @@
     let palmTrees = [];
 
     function generateScenery() {
-      // Twinkling night sky stars
       stars = Array.from({ length: 75 }, () => ({
         x: Math.random() * width,
         y: Math.random() * height * 0.56,
@@ -539,7 +725,6 @@
         speed: 1.5 + Math.random() * 2.5
       }));
 
-      // Pixel-lit Neon City Skyline Buildings
       skylineBuildings = [];
       let bx = -20;
       while (bx < width + 60) {
@@ -570,7 +755,6 @@
         bx += bw - 4;
       }
 
-      // Swaying Neon City Silhouette Palm Trees along the horizon
       palmTrees = [
         { xRatio: 0.06, scale: 0.85, phase: 0.2 },
         { xRatio: 0.22, scale: 1.05, phase: 1.4 },
@@ -599,14 +783,18 @@
       waveInFloor: 0,
       wavesPerFloor: 5,
       score: 0,
+      runMultiplier: 1.0, // Forged at the end of every floor!
       streak: 0,
       bestStreak: 0,
+      cleanCutCounter: 0,
+      totalSlicesThisRun: 0,
       hp: 5,
       maxHp: 5,
       shields: 1,
+      phoenixUsed: false,
       relics: [],
       recentWords: [],
-      reclaimedWords: new Map(), // Stores unlocked words for the Great Word Book
+      floorSlicedWords: [], // Words sliced on the current floor (used for Morpheme Forge)
       activeEntities: [],
       slicedHalves: [],
       particles: [],
@@ -623,6 +811,7 @@
       wavePendingNext: false,
       nextWaveTimer: 0,
       gridOffset: 0,
+      breakdownHideTimer: null,
       ninjaAnim: {
         slashTimer: 0,
         hurtTimer: 0,
@@ -632,7 +821,7 @@
     };
 
     // -------------------------------------------------------------------------
-    // 4. PIXEL-ACCURATE MORPHEME SEAM MEASUREMENT (ctx.measureText)
+    // 5. PIXEL-ACCURATE MORPHEME SEAM MEASUREMENT (ctx.measureText)
     // -------------------------------------------------------------------------
     function computeWordMetrics(entry) {
       ctx.save();
@@ -675,7 +864,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // 5. CURRICULUM SCALING & 12-WORD NO-REPEAT QUEUE
+    // 6. CURRICULUM SCALING & 12-WORD NO-REPEAT QUEUE
     // -------------------------------------------------------------------------
     function getActiveWordPool() {
       const order = ['set1', 'set2', 'set3'];
@@ -715,7 +904,47 @@
     }
 
     // -------------------------------------------------------------------------
-    // 6. WAVE & ENTITY SPAWNING SYSTEM (WITH SENSEI 1.25s TELEGRAPH)
+    // 7. LIVE HUD MORPHEME BREAKDOWN BANNER
+    // -------------------------------------------------------------------------
+    function showLiveBreakdownBanner(entry) {
+      const banner = document.getElementById('liveBreakdownBanner');
+      const header = document.getElementById('liveBreakdownHeader');
+      const partsEl = document.getElementById('liveBreakdownParts');
+
+      header.textContent = `${entry.word.toUpperCase()} = "${entry.meaning.toUpperCase()}"`;
+      partsEl.innerHTML = '';
+
+      entry.parts.forEach((p, idx) => {
+        const badge = document.createElement('span');
+        const colorCls =
+          p.role === 'prefix'
+            ? 'border-cyan-400/70 bg-cyan-500/20 text-cyan-200'
+            : p.role === 'suffix'
+              ? 'border-pink-400/70 bg-pink-500/20 text-pink-200'
+              : 'border-amber-400/70 bg-amber-500/20 text-amber-200';
+        badge.className = `rounded-md border px-2 py-0.5 ${colorCls}`;
+        badge.textContent = `[${p.role.toUpperCase()}] ${p.text} (${p.gloss})`;
+        partsEl.appendChild(badge);
+
+        if (idx < entry.parts.length - 1) {
+          const plus = document.createElement('span');
+          plus.className = 'text-white/70 font-bold';
+          plus.textContent = '+';
+          partsEl.appendChild(plus);
+        }
+      });
+
+      banner.classList.remove('hidden');
+      if (gameState.breakdownHideTimer) {
+        clearTimeout(gameState.breakdownHideTimer);
+      }
+      gameState.breakdownHideTimer = setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 4200);
+    }
+
+    // -------------------------------------------------------------------------
+    // 8. WAVE & ENTITY SPAWNING SYSTEM (WITH SENSEI 1.25s TELEGRAPH)
     // -------------------------------------------------------------------------
     function spawnWordEntity(entry, options = {}) {
       const isTrap = Boolean(options.isTrap);
@@ -741,7 +970,7 @@
       const spawnY = height + 65;
 
       const targetPeakY = height * (0.24 + Math.random() * 0.2);
-      const gravityBase = hasRelic('chrono_visor') ? 465 : 555;
+      const gravityBase = hasRelic('chrono_blade') ? 465 : 555;
       const gravity = isBoss ? gravityBase * 0.82 : gravityBase;
       const vy = -Math.sqrt(2 * gravity * (spawnY - targetPeakY));
 
@@ -849,8 +1078,7 @@
       }
 
       // Spawn Golden Root Orb occasionally
-      const orbChance = hasRelic('golden_lens') ? 0.36 : 0.16;
-      if (Math.random() < orbChance) {
+      if (Math.random() < 0.18) {
         spawnWordEntity(null, { isOrb: true });
       }
     }
@@ -876,7 +1104,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // 7. SWIPE COLLISIONS & MORPHEME SPLITTING
+    // 9. SWIPE COLLISIONS & MORPHEME SPLITTING
     // -------------------------------------------------------------------------
     function worldToLocal(entity, wx, wy) {
       const dx = wx - entity.x;
@@ -920,7 +1148,7 @@
         if (ent.isOrb) {
           ent.sliced = true;
           audio.playOrb();
-          addScore(hasRelic('golden_lens') ? 350 : 200);
+          addScore(200);
           if (gameState.hp < gameState.maxHp) {
             gameState.hp++;
             spawnFloatingText(ent.x, ent.y - 26, '+1 HP & GOLDEN ROOT!', '#ffe600');
@@ -946,7 +1174,7 @@
           continue;
         }
 
-        // Sensei Challenge Validation (with explicit comparative explanation on wrong pick)
+        // Sensei Challenge Validation
         if (gameState.waveMode === 'sensei') {
           gameState.swipeCooldownUntil = now + 200;
 
@@ -973,7 +1201,7 @@
         }
 
         // Measure Distance to Pixel-Accurate Cyan Morpheme Seam
-        const perfectTolerance = hasRelic('plasma_katana') ? 50 : 35;
+        const perfectTolerance = hasRelic('laser_edge') ? 50 : 35;
         let hitUncutSeam = null;
         let minSeamDist = Infinity;
 
@@ -1017,16 +1245,42 @@
         ent.sliced = true;
         gameState.ninjaAnim.slashTimer = 0.3;
         gameState.streak++;
+        gameState.totalSlicesThisRun++;
         if (gameState.streak > gameState.bestStreak) {
           gameState.bestStreak = gameState.streak;
         }
 
-        // Record into Scribe's Great Word Book
-        gameState.reclaimedWords.set(ent.word, ent.entry);
+        // Vampiric Scroll Relic: Every 5th consecutive clean seam cut heals +1 HP
+        if (isCleanCut) {
+          gameState.cleanCutCounter++;
+          if (hasRelic('vampiric_scroll') && gameState.cleanCutCounter % 5 === 0) {
+            if (gameState.hp < gameState.maxHp) {
+              gameState.hp++;
+              spawnFloatingText(ent.x, ent.y - 54, '🩸 VAMPIRIC DRAIN +1 HP!', '#4ade80', 15);
+            } else {
+              gameState.shields++;
+              spawnFloatingText(ent.x, ent.y - 54, '🩸 VAMPIRIC AEGIS +1 SHIELD!', '#00f5d4', 15);
+            }
+          }
+        } else {
+          gameState.cleanCutCounter = 0;
+        }
 
-        const cleanBonus = isCleanCut ? (hasRelic('plasma_katana') ? 100 : 50) : 0;
+        // Twin Slash Relic: Every 3rd word sliced unleashes +150 energy wave
+        const twinBonus = hasRelic('twin_slash') && gameState.totalSlicesThisRun % 3 === 0 ? 150 : 0;
+
+        // Save to Persistent Great Word Book & Current Floor History
+        recordWordBookMastery(ent.word, isCleanCut, false);
+        if (!gameState.floorSlicedWords.some(w => w.word === ent.word)) {
+          gameState.floorSlicedWords.push(ent.entry);
+        }
+
+        // Live Morpheme Breakdown HUD Banner
+        showLiveBreakdownBanner(ent.entry);
+
+        const cleanBonus = isCleanCut ? (hasRelic('laser_edge') ? 100 : 50) : 0;
         const bossBonus = ent.isBoss ? 300 : 0;
-        const basePts = 100 + cleanBonus + bossBonus;
+        const basePts = 100 + cleanBonus + bossBonus + twinBonus;
         addScore(basePts);
 
         audio.playSlice(isCleanCut);
@@ -1046,7 +1300,9 @@
             ? `CLEAN SEAM CUT! +${getMultipliedScore(basePts)}`
             : `SPLIT! +${getMultipliedScore(basePts)}`;
         spawnFloatingText(ent.x, ent.y - 26, label, isCleanCut ? '#00f5d4' : '#ff85b8');
-        spawnFloatingText(ent.x, ent.y + 8, breakdownText, '#ffe600', 15);
+        if (twinBonus > 0) {
+          spawnFloatingText(ent.x, ent.y + 12, '⚔️ TWIN SLASH WAVE!', '#ffe600', 14);
+        }
 
         updateHUD();
         if (gameState.waveMode === 'sensei') break;
@@ -1054,18 +1310,23 @@
     }
 
     function getMultipliedScore(rawPoints) {
-      const streakStep = hasRelic('synth_amp') ? 2 : 4;
-      const mult = 1 + Math.floor(gameState.streak / streakStep) * 0.5;
-      const relicMult = hasRelic('synth_amp') ? 1.25 : 1;
-      return Math.round(rawPoints * mult * relicMult);
+      const streakStep = hasRelic('sensei_eye') ? 2 : 4;
+      const streakMult = 1 + Math.floor(gameState.streak / streakStep) * 0.5;
+      const relicMult = hasRelic('sensei_eye') ? 1.25 : 1;
+      return Math.round(rawPoints * streakMult * relicMult * gameState.runMultiplier);
     }
 
     function addScore(rawPoints) {
       gameState.score += getMultipliedScore(rawPoints);
+      if (gameState.score > persistentBestScore) {
+        persistentBestScore = gameState.score;
+        savePersistentProgress();
+      }
     }
 
     function damageNinja(x, y, message) {
       gameState.streak = 0;
+      gameState.cleanCutCounter = 0;
       gameState.ninjaAnim.hurtTimer = 0.42;
 
       if (gameState.shields > 0) {
@@ -1074,6 +1335,16 @@
       } else {
         gameState.hp = Math.max(0, gameState.hp - 1);
         spawnFloatingText(x, y - 22, message, '#ff2a85');
+      }
+
+      // Phoenix Feather Relic: Prevents fatal overload once per run!
+      if (gameState.hp <= 0 && hasRelic('phoenix_feather') && !gameState.phoenixUsed) {
+        gameState.phoenixUsed = true;
+        gameState.hp = 3;
+        gameState.shields += 1;
+        audio.playRelicPick();
+        spawnParticles(width * 0.2, height - 90, '#ffe600', 36);
+        spawnFloatingText(width * 0.5, height * 0.42, '🪶 PHOENIX FEATHER REVIVE! +3 HP', '#ffe600', 22);
       }
 
       updateHUD();
@@ -1123,7 +1394,7 @@
 
     function spawnFloatingText(x, y, text, color = '#ffffff', fontSize = 18) {
       gameState.floatingTexts.push({
-        x: Math.max(130, Math.min(width - 130, x)),
+        x: Math.max(135, Math.min(width - 135, x)),
         y,
         vy: -56,
         text,
@@ -1135,7 +1406,163 @@
     }
 
     // -------------------------------------------------------------------------
-    // 8. FLOOR PROGRESSION, RELIC DRAFT & WORD BOOK ARCHIVE
+    // 10. TIMED END-OF-FLOOR MORPHEME FORGE (15s, 3 QUESTIONS)
+    // -------------------------------------------------------------------------
+    const forgeState = {
+      active: false,
+      questions: [],
+      currentIndex: 0,
+      timeLeft: 15.0,
+      timerInterval: null,
+      locked: false
+    };
+
+    function buildForgeQuestions() {
+      const sourcePool = gameState.floorSlicedWords.length > 0
+        ? [...gameState.floorSlicedWords]
+        : [...getActiveWordPool()];
+
+      const allGlosses = Array.from(
+        new Set(
+          [...WORD_DATABASE.set1, ...WORD_DATABASE.set2, ...WORD_DATABASE.set3, ...BOSS_WORDS]
+            .flatMap(w => w.parts.map(p => p.gloss))
+        )
+      );
+
+      const questions = [];
+      for (let q = 0; q < 3; q++) {
+        const wordObj = sourcePool[q % sourcePool.length];
+        const part = wordObj.parts[Math.floor(Math.random() * wordObj.parts.length)];
+        const wrongChoices = allGlosses
+          .filter(g => g.toLowerCase() !== part.gloss.toLowerCase())
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+        const options = [part.gloss, ...wrongChoices].sort(() => Math.random() - 0.5);
+
+        questions.push({
+          word: wordObj.word,
+          morpheme: part.text,
+          role: part.role,
+          correctGloss: part.gloss,
+          options
+        });
+      }
+      return questions;
+    }
+
+    function startMorphemeForge() {
+      gameState.paused = true;
+      forgeState.active = true;
+      forgeState.questions = buildForgeQuestions();
+      forgeState.currentIndex = 0;
+      forgeState.timeLeft = 15.0;
+      forgeState.locked = false;
+
+      const modal = document.getElementById('forgeModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      renderForgeQuestion();
+
+      if (forgeState.timerInterval) clearInterval(forgeState.timerInterval);
+      forgeState.timerInterval = setInterval(() => {
+        if (!forgeState.active) return;
+        forgeState.timeLeft = Math.max(0, forgeState.timeLeft - 0.1);
+        const pct = (forgeState.timeLeft / 15.0) * 100;
+        document.getElementById('forgeTimerBar').style.width = `${pct}%`;
+        document.getElementById('forgeTimerText').textContent = `${forgeState.timeLeft.toFixed(1)}s REMAINING`;
+
+        if (forgeState.timeLeft <= 0) {
+          finishMorphemeForge('Time expired! Forge sealed.');
+        }
+      }, 100);
+    }
+
+    function renderForgeQuestion() {
+      const q = forgeState.questions[forgeState.currentIndex];
+      document.getElementById('forgeQuestionCounter').textContent = `Q ${forgeState.currentIndex + 1} / 3`;
+      document.getElementById('forgeMultBadge').textContent = `RUN x${gameState.runMultiplier.toFixed(2)}`;
+      document.getElementById('forgeContextWord').textContent = `FROM WORD: "${q.word.toUpperCase()}"`;
+      document.getElementById('forgeTargetMorpheme').textContent = q.morpheme;
+      document.getElementById('forgeRoleBadge').textContent = q.role.toUpperCase();
+      document.getElementById('forgeFeedback').textContent = '';
+
+      const choicesEl = document.getElementById('forgeChoices');
+      choicesEl.innerHTML = '';
+
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'rounded-2xl border-2 border-[#00f5d4]/60 bg-[#180942] px-4 py-3 text-sm font-bold text-white transition hover:border-[#ffe600] hover:bg-[#240e5e] active:scale-95';
+        btn.textContent = `"${opt}"`;
+        btn.addEventListener('click', () => handleForgeAnswer(opt, btn));
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    function handleForgeAnswer(selected, btnEl) {
+      if (forgeState.locked || !forgeState.active) return;
+      forgeState.locked = true;
+
+      const q = forgeState.questions[forgeState.currentIndex];
+      const feedbackEl = document.getElementById('forgeFeedback');
+      const isCorrect = selected === q.correctGloss;
+
+      if (isCorrect) {
+        audio.playSlice(true);
+        gameState.runMultiplier = Number((gameState.runMultiplier + 0.5).toFixed(2));
+        recordWordBookMastery(q.word, true, true);
+        btnEl.classList.remove('border-[#00f5d4]/60', 'bg-[#180942]');
+        btnEl.classList.add('border-emerald-400', 'bg-emerald-500/30', 'text-emerald-200');
+        feedbackEl.innerHTML = `<span class="text-emerald-300">FORGED! +0.50x Run Multiplier (Now x${gameState.runMultiplier.toFixed(2)}) & ★★★ Word Mastery!</span>`;
+      } else {
+        audio.playError();
+        gameState.runMultiplier = Math.max(1.0, Number((gameState.runMultiplier - 0.25).toFixed(2)));
+        btnEl.classList.remove('border-[#00f5d4]/60', 'bg-[#180942]');
+        btnEl.classList.add('border-rose-500', 'bg-rose-500/30', 'text-rose-200');
+        feedbackEl.innerHTML = `<span class="text-rose-300">Incorrect! "${q.morpheme}" means "${q.correctGloss}". Run Multiplier: x${gameState.runMultiplier.toFixed(2)}</span>`;
+      }
+
+      document.getElementById('forgeMultBadge').textContent = `RUN x${gameState.runMultiplier.toFixed(2)}`;
+      updateHUD();
+
+      setTimeout(() => {
+        if (!forgeState.active) return;
+        forgeState.currentIndex++;
+        if (forgeState.currentIndex >= 3) {
+          finishMorphemeForge();
+        } else {
+          forgeState.locked = false;
+          renderForgeQuestion();
+        }
+      }, 850);
+    }
+
+    function finishMorphemeForge(reasonMsg = null) {
+      if (!forgeState.active) return;
+      forgeState.active = false;
+      if (forgeState.timerInterval) {
+        clearInterval(forgeState.timerInterval);
+        forgeState.timerInterval = null;
+      }
+
+      const modal = document.getElementById('forgeModal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+
+      if (reasonMsg) {
+        spawnFloatingText(width * 0.5, height * 0.35, reasonMsg, '#ffe600', 18);
+      }
+
+      // Check if Scribe reached the Summit (Floor 6 Cleared!)
+      if (gameState.floor >= MAX_TOWER_FLOORS) {
+        triggerSummitVictory();
+      } else {
+        openRelicDraft();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 11. RELIC DRAFT, SUMMIT VICTORY & PERSISTENT WORD BOOK ARCHIVE
     // -------------------------------------------------------------------------
     function openRelicDraft() {
       gameState.paused = true;
@@ -1173,9 +1600,9 @@
       if (!hasRelic(relic.id)) {
         gameState.relics.push(relic);
       }
-      if (relic.id === 'aegis_dome') {
+      if (relic.id === 'aegis_deflector') {
         gameState.shields += 1;
-      } else if (relic.id === 'nano_stim') {
+      } else if (relic.id === 'cyber_heart') {
         gameState.maxHp += 1;
         gameState.hp = Math.min(gameState.maxHp, gameState.hp + 2);
       }
@@ -1185,7 +1612,8 @@
     function advanceToNextFloor() {
       gameState.floor++;
       gameState.waveInFloor = 0;
-      if (hasRelic('aegis_dome')) {
+      gameState.floorSlicedWords = [];
+      if (hasRelic('aegis_deflector')) {
         gameState.shields++;
       }
       gameState.paused = false;
@@ -1193,34 +1621,96 @@
       launchNextWave();
     }
 
+    function triggerSummitVictory() {
+      gameState.running = false;
+      audio.stopMusic();
+      audio.playRelicPick();
+
+      const summitBonus = Math.round(2500 * gameState.runMultiplier);
+      gameState.score += summitBonus;
+      if (gameState.score > persistentBestScore) {
+        persistentBestScore = gameState.score;
+        savePersistentProgress();
+      }
+      updateHUD();
+
+      document.getElementById('victoryMultDisplay').textContent = `x${gameState.runMultiplier.toFixed(2)}`;
+      document.getElementById('victoryBonusAwarded').textContent = `+${summitBonus.toLocaleString()}`;
+      document.getElementById('victoryFinalScore').textContent = gameState.score.toLocaleString();
+      document.getElementById('victoryWordBook').textContent = `${getUnlockedWordCount()}/${TOTAL_WORDBOOK_COUNT}`;
+
+      const modal = document.getElementById('victoryModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
     function openWordBook() {
-      if (!gameState.running) return;
-      gameState.paused = true;
+      if (gameState.running) {
+        gameState.paused = true;
+      }
       const modal = document.getElementById('wordBookModal');
       const list = document.getElementById('wordBookList');
       const stats = document.getElementById('wordBookStats');
 
-      const totalWords = WORD_DATABASE.set1.length + WORD_DATABASE.set2.length + WORD_DATABASE.set3.length + BOSS_WORDS.length;
-      stats.textContent = `Reclaimed Words: ${gameState.reclaimedWords.size} / ${totalWords} unlocked this run`;
+      const unlocked = getUnlockedWordCount();
+      stats.innerHTML = `
+        <span>Unlocked Lexicon: <strong class="text-amber-300">${unlocked} / ${TOTAL_WORDBOOK_COUNT} Words</strong> (Saved Permanently)</span>
+        <span class="text-pink-300">★ Sliced • ★★ Clean Seam • ★★★ Forged</span>
+      `;
 
       list.innerHTML = '';
-      if (gameState.reclaimedWords.size === 0) {
-        list.innerHTML = `<div class="col-span-full rounded-2xl border border-white/10 bg-[#140738] p-4 text-center text-xs text-pink-200">No words reclaimed yet! Slice flying scrolls to restore pages to the Great Word Book.</div>`;
-      } else {
-        gameState.reclaimedWords.forEach((entry, word) => {
-          const item = document.createElement('div');
-          item.className = 'rounded-2xl border border-[#00f5d4]/40 bg-[#140738]/90 p-3 text-left';
-          const partsHtml = entry.parts.map(p => `<span class="rounded bg-[#ff2a85]/25 px-1.5 py-0.5 text-[11px] font-bold text-[#00f5d4]">${p.text}</span>`).join(' + ');
-          item.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-base text-white">${word}</span>
-              <span class="text-xs font-semibold text-amber-300">"${entry.meaning}"</span>
-            </div>
-            <div class="mt-1.5 flex flex-wrap items-center gap-1">${partsHtml}</div>
-          `;
-          list.appendChild(item);
+
+      const tiers = [
+        { title: 'TIER I: CORE AFFIXES', words: WORD_DATABASE.set1 },
+        { title: 'TIER II: LATIN ROOTS', words: WORD_DATABASE.set2 },
+        { title: 'TIER III: GREEK & ADVANCED', words: WORD_DATABASE.set3 }
+      ];
+
+      tiers.forEach(tier => {
+        const tierUnlocked = tier.words.filter(w => persistentWordBook[w.word]).length;
+        const section = document.createElement('div');
+        section.className = 'rounded-2xl border border-white/10 bg-[#10052e]/90 p-3.5';
+        section.innerHTML = `
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="font-pixel text-[10px] text-[#00f5d4]">${tier.title}</span>
+            <span class="font-pixel text-[9px] text-amber-300">${tierUnlocked}/${tier.words.length}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        `;
+
+        const grid = section.querySelector('div.grid');
+        tier.words.forEach(entry => {
+          const record = persistentWordBook[entry.word];
+          const card = document.createElement('div');
+          if (record) {
+            const starsStr = '★'.repeat(record.stars) + '☆'.repeat(3 - record.stars);
+            const partsHtml = entry.parts
+              .map(p => `<span class="rounded bg-[#ff2a85]/25 px-1.5 py-0.5 text-[11px] font-bold text-[#00f5d4]">${p.text} (${p.gloss})</span>`)
+              .join(' + ');
+            card.className = 'rounded-xl border border-[#00f5d4]/45 bg-[#180a42] p-2.5 text-left';
+            card.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-sm text-white">${entry.word}</span>
+                <span class="text-xs font-bold text-amber-300">${starsStr}</span>
+              </div>
+              <div class="text-[11px] text-pink-200">"${entry.meaning}"</div>
+              <div class="mt-1 flex flex-wrap items-center gap-1">${partsHtml}</div>
+            `;
+          } else {
+            card.className = 'rounded-xl border border-white/10 bg-[#0b0322]/80 p-2.5 text-left opacity-60';
+            card.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="font-pixel text-[10px] text-slate-400">🔒 LOCKED</span>
+                <span class="text-[11px] text-slate-500">☆☆☆</span>
+              </div>
+              <div class="mt-1 text-[11px] text-slate-400">Clue: ${entry.clue}</div>
+            `;
+          }
+          grid.appendChild(card);
         });
-      }
+
+        list.appendChild(section);
+      });
 
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -1230,9 +1720,14 @@
       gameState.running = false;
       audio.stopMusic();
 
+      if (gameState.score > persistentBestScore) {
+        persistentBestScore = gameState.score;
+        savePersistentProgress();
+      }
+
       document.getElementById('finalScore').textContent = gameState.score.toLocaleString();
-      document.getElementById('finalFloor').textContent = gameState.floor;
-      document.getElementById('finalStreak').textContent = gameState.bestStreak;
+      document.getElementById('finalWordBook').textContent = `${getUnlockedWordCount()}/${TOTAL_WORDBOOK_COUNT}`;
+      document.getElementById('finalFloor').textContent = `${gameState.floor}/${MAX_TOWER_FLOORS}`;
 
       const box = document.getElementById('lastBreakdownBox');
       if (gameState.lastBreakdown) {
@@ -1241,7 +1736,7 @@
           <div>${gameState.lastBreakdown.detail}</div>
         `;
       } else {
-        box.textContent = 'Tip: Slice along the dashed cyan morpheme seams for +50 Clean Seam bonuses!';
+        box.textContent = 'Tip: Clear all 6 Floors of Lexicon Tower to multiply the +2,500 Summit Victory Bonus!';
       }
 
       const modal = document.getElementById('gameOverModal');
@@ -1250,12 +1745,14 @@
     }
 
     // -------------------------------------------------------------------------
-    // 9. HUD SYNCHRONIZATION
+    // 12. HUD SYNCHRONIZATION
     // -------------------------------------------------------------------------
     function updateHUD() {
       document.getElementById('scoreDisplay').textContent = gameState.score.toLocaleString();
-      document.getElementById('hudFloorBadge').textContent = `FLOOR ${gameState.floor}`;
+      document.getElementById('hudFloorBadge').textContent = `FLOOR ${gameState.floor}/${MAX_TOWER_FLOORS}`;
+      document.getElementById('hudRunMultBadge').textContent = `FORGE x${gameState.runMultiplier.toFixed(2)}`;
       document.getElementById('tierLabel').textContent = getCurrentTierLabel();
+      refreshWordBookBadges();
 
       const currentWave = Math.min(gameState.wavesPerFloor, Math.max(1, gameState.waveInFloor));
       document.getElementById('waveCounter').textContent = `WAVE ${currentWave}/${gameState.wavesPerFloor}`;
@@ -1278,7 +1775,7 @@
       }
 
       const comboEl = document.getElementById('comboBadge');
-      const streakStep = hasRelic('synth_amp') ? 2 : 4;
+      const streakStep = hasRelic('sensei_eye') ? 2 : 4;
       const mult = 1 + Math.floor(gameState.streak / streakStep) * 0.5;
       if (mult > 1) {
         comboEl.classList.remove('hidden');
@@ -1299,12 +1796,11 @@
     }
 
     // -------------------------------------------------------------------------
-    // 10. SYNTHWAVE NEON CITY RENDERER & MAIN LOOP
+    // 13. SYNTHWAVE NEON CITY RENDERER & MAIN LOOP
     // -------------------------------------------------------------------------
     let lastFrameTime = performance.now();
 
     function update(dt, now) {
-      // Animate synthwave grid & stars even on the start screen
       gameState.gridOffset = (gameState.gridOffset + dt * 52) % 40;
       gameState.ninjaAnim.bobPhase += dt * 4.4;
 
@@ -1410,7 +1906,7 @@
 
       gameState.swipeTrail = gameState.swipeTrail.filter(pt => now - pt.time < 165);
 
-      // Wave Completion Check
+      // Wave Completion Check -> End-of-Floor Morpheme Forge
       if (
         gameState.activeEntities.length === 0 &&
         gameState.senseiTelegraphTimer <= 0 &&
@@ -1425,7 +1921,7 @@
           if (gameState.nextWaveTimer <= 0) {
             gameState.wavePendingNext = false;
             if (gameState.waveInFloor >= gameState.wavesPerFloor) {
-              openRelicDraft();
+              startMorphemeForge();
             } else {
               launchNextWave();
             }
@@ -1439,7 +1935,6 @@
       ctx.translate(x, baseY);
       ctx.scale(scale, scale);
 
-      // Curved trunk
       ctx.strokeStyle = '#070118';
       ctx.lineWidth = 9;
       ctx.lineCap = 'round';
@@ -1448,7 +1943,6 @@
       ctx.quadraticCurveTo(14 + sway * 6, -55, 6 + sway * 12, -110);
       ctx.stroke();
 
-      // Palm fronds
       const topX = 6 + sway * 12;
       const topY = -110;
       ctx.translate(topX, topY);
@@ -1471,7 +1965,6 @@
     function drawSynthwaveNeonCity(now) {
       const horizonY = height * 0.67;
 
-      // 1. Multi-Stop Deep Violet -> Magenta -> Sunset Orange Sky
       const skyGrad = ctx.createLinearGradient(0, 0, 0, horizonY);
       skyGrad.addColorStop(0, '#07011a');
       skyGrad.addColorStop(0.42, '#2b0a62');
@@ -1480,7 +1973,6 @@
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, width, horizonY);
 
-      // 2. Twinkling Stars in Upper Sky
       for (const st of stars) {
         const alpha = 0.35 + 0.65 * Math.abs(Math.sin(now * 0.001 * st.speed + st.phase));
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(2)})`;
@@ -1489,7 +1981,6 @@
         ctx.fill();
       }
 
-      // 3. Striped Glowing Retro Outrun Sun
       const sunX = width * 0.5;
       const sunY = horizonY - Math.min(width, height) * 0.09;
       const sunR = Math.min(width, height) * 0.21;
@@ -1507,7 +1998,6 @@
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Horizontal Scanline Cutouts across Lower Half of Sun
       ctx.clip();
       for (let s = 0; s < 7; s++) {
         const stripeY = sunY + sunR * (0.06 + s * 0.13);
@@ -1517,18 +2007,15 @@
       }
       ctx.restore();
 
-      // 4. Pixel-Lit Neon City Skyline Buildings
       for (const b of skylineBuildings) {
         const by = horizonY - b.h;
         ctx.fillStyle = '#09021c';
         ctx.fillRect(b.x, by, b.w, b.h);
 
-        // Neon roof trim
         ctx.strokeStyle = b.rimColor;
         ctx.lineWidth = 1.5;
         ctx.strokeRect(b.x + 0.5, by + 0.5, b.w - 1, b.h);
 
-        // Antenna spire
         if (b.spire > 0) {
           ctx.beginPath();
           ctx.moveTo(b.x + b.w * 0.5, by);
@@ -1536,27 +2023,22 @@
           ctx.stroke();
         }
 
-        // Glowing cyan & pink pixel windows
         for (const win of b.windows) {
           ctx.fillStyle = win.color;
           ctx.fillRect(b.x + win.rx, by + win.ry, 6, 8);
         }
       }
 
-      // 5. Swaying Palm Tree Silhouettes
-      const sway = Math.sin(now * 0.0016);
       for (const tree of palmTrees) {
         drawPalmTree(width * tree.xRatio, horizonY + 2, tree.scale, Math.sin(now * 0.0016 + tree.phase));
       }
 
-      // 6. Perspective Laser Grid Ground & Cyan Horizon Beam
       const groundGrad = ctx.createLinearGradient(0, horizonY, 0, height);
       groundGrad.addColorStop(0, '#12032e');
       groundGrad.addColorStop(1, '#050112');
       ctx.fillStyle = groundGrad;
       ctx.fillRect(0, horizonY, width, height - horizonY);
 
-      // Perspective vertical grid lines
       ctx.strokeStyle = 'rgba(255, 42, 133, 0.36)';
       ctx.lineWidth = 1.5;
       const cols = 16;
@@ -1569,7 +2051,6 @@
         ctx.stroke();
       }
 
-      // Scrolling horizontal laser scanlines
       const gridH = height - horizonY;
       const rows = 8;
       for (let r = 0; r < rows; r++) {
@@ -1582,7 +2063,6 @@
         ctx.stroke();
       }
 
-      // Bright Cyan Horizon Beam
       ctx.save();
       ctx.strokeStyle = '#00f5d4';
       ctx.lineWidth = 3;
@@ -1601,7 +2081,6 @@
       const ledgeX = 0;
       const ledgeY = height - ledgeH;
 
-      // Neon Rooftop Ledge in Bottom-Left Foreground
       ctx.save();
       ctx.fillStyle = '#080218';
       ctx.fillRect(ledgeX, ledgeY, ledgeW, ledgeH);
@@ -1617,12 +2096,10 @@
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // Rooftop neon edge stripe
       ctx.fillStyle = '#00f5d4';
       ctx.fillRect(10, ledgeY + 8, ledgeW - 24, 3);
       ctx.restore();
 
-      // Scribe — The Cyber Ninja Perched on the Ledge
       const nx = Math.min(92, ledgeW * 0.54);
       const breathY = Math.sin(gameState.ninjaAnim.bobPhase) * 3.5;
       const ny = ledgeY - 22 + breathY;
@@ -1634,7 +2111,6 @@
         ctx.globalAlpha = 0.45;
       }
 
-      // Energy Shield Dome
       if (gameState.shields > 0) {
         ctx.save();
         ctx.beginPath();
@@ -1648,7 +2124,6 @@
         ctx.restore();
       }
 
-      // Flowing Neon Magenta Scarf Tails
       const scarfWave = Math.sin(now * 0.007) * 7;
       ctx.strokeStyle = '#ff2a85';
       ctx.lineWidth = 5;
@@ -1665,7 +2140,6 @@
       ctx.quadraticCurveTo(-26, -14 - scarfWave, -42, -4 + scarfWave);
       ctx.stroke();
 
-      // Cyber-Ninja Armored Torso & Legs
       ctx.fillStyle = '#0b0524';
       ctx.strokeStyle = '#00f5d4';
       ctx.lineWidth = 2;
@@ -1674,18 +2148,15 @@
       ctx.fill();
       ctx.stroke();
 
-      // Chest Cyber-Core Emblem
       ctx.fillStyle = '#ff2a85';
       ctx.fillRect(-5, -8, 10, 10);
 
-      // Hooded Head & Glowing Cyan Visor
       ctx.fillStyle = '#120836';
       ctx.beginPath();
       ctx.arc(0, -29, 16, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      // Glowing Cyan Cyber Visor
       ctx.fillStyle = '#00f5d4';
       ctx.shadowColor = '#00f5d4';
       ctx.shadowBlur = 12;
@@ -1694,18 +2165,16 @@
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Plasma Katana Blade (Swings forward when slicing!)
       ctx.save();
       const slashAngle = gameState.ninjaAnim.slashTimer > 0 ? 0.55 : -0.65;
       ctx.rotate(slashAngle);
-      // Hilt
       ctx.strokeStyle = '#ffe600';
       ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(10, -4);
       ctx.lineTo(20, -12);
       ctx.stroke();
-      // Glowing Cyan Plasma Edge
+
       ctx.strokeStyle = '#00f5d4';
       ctx.shadowColor = '#00f5d4';
       ctx.shadowBlur = 14;
@@ -1720,7 +2189,6 @@
     }
 
     function drawSenseiTelegraphOverlay() {
-      // Show full-center telegraph banner before dual words launch, or a compact top arena badge while in flight
       if (gameState.waveMode !== 'sensei') return;
 
       if (gameState.senseiTelegraphTimer > 0) {
@@ -1764,7 +2232,6 @@
         ctx.translate(ent.x, ent.y);
         ctx.rotate(ent.rotation);
 
-        // Golden Root Orb
         if (ent.isOrb) {
           const r = 38;
           const orbGrad = ctx.createRadialGradient(0, 0, 6, 0, 0, r);
@@ -1796,7 +2263,6 @@
         const hw = ent.cardWidth * 0.5;
         const hh = ent.cardHeight * 0.5;
 
-        // Crisp Neon Sign Card with Pink Outer Glow & Inner Cyan Trim
         const bgGrad = ctx.createLinearGradient(0, -hh, 0, hh);
         if (ent.isBoss) {
           bgGrad.addColorStop(0, '#36075e');
@@ -1822,14 +2288,12 @@
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Inner Cyan Neon Trim
         ctx.strokeStyle = 'rgba(0, 245, 212, 0.65)';
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.roundRect(-hw + 4.5, -hh + 4.5, ent.cardWidth - 9, ent.cardHeight - 9, 12);
         ctx.stroke();
 
-        // Boss / Sensei Choice Micro-Header
         if (ent.isBoss) {
           ctx.fillStyle = '#ffe600';
           ctx.font = '700 8px "Press Start 2P", monospace';
@@ -1844,14 +2308,12 @@
           ctx.fillText('SENSEI CHOICE', 0, -hh + 13);
         }
 
-        // Render Word Centered at (0, 0)
         ctx.fillStyle = '#ffffff';
         ctx.font = WORD_FONT;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(ent.word, 0, ent.isBoss || ent.isSenseiChoice ? 6 : 1);
 
-        // Render Pixel-Accurate Dashed Cyan Morpheme Cut Line(s)
         if (!ent.isTrap && ent.seams.length > 0) {
           for (const seam of ent.seams) {
             ctx.save();
@@ -1871,7 +2333,6 @@
         ctx.restore();
       }
 
-      // Sliced Morpheme Halves
       for (const h of gameState.slicedHalves) {
         ctx.save();
         ctx.globalAlpha = Math.max(0, h.alpha);
@@ -1963,7 +2424,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // 11. POINTER & TOUCH SWIPE INPUT HANDLING
+    // 14. POINTER & TOUCH SWIPE INPUT HANDLING
     // -------------------------------------------------------------------------
     function getCanvasCoords(e) {
       const rect = canvas.getBoundingClientRect();
@@ -2010,7 +2471,7 @@
     window.addEventListener('touchend', handlePointerUp);
 
     // -------------------------------------------------------------------------
-    // 12. UI EVENT LISTENERS & RUN INITIALIZATION
+    // 15. UI EVENT LISTENERS & RUN INITIALIZATION
     // -------------------------------------------------------------------------
     document.querySelectorAll('.set-select-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2031,14 +2492,18 @@
       gameState.floor = 1;
       gameState.waveInFloor = 0;
       gameState.score = 0;
+      gameState.runMultiplier = 1.0;
       gameState.streak = 0;
       gameState.bestStreak = 0;
+      gameState.cleanCutCounter = 0;
+      gameState.totalSlicesThisRun = 0;
       gameState.hp = 5;
       gameState.maxHp = 5;
       gameState.shields = 1;
+      gameState.phoenixUsed = false;
       gameState.relics = [];
       gameState.recentWords = [];
-      gameState.reclaimedWords.clear();
+      gameState.floorSlicedWords = [];
       gameState.activeEntities = [];
       gameState.slicedHalves = [];
       gameState.particles = [];
@@ -2051,9 +2516,15 @@
       gameState.lastBreakdown = null;
 
       document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('liveBreakdownBanner').classList.add('hidden');
+
       const goModal = document.getElementById('gameOverModal');
       goModal.classList.remove('flex');
       goModal.classList.add('hidden');
+
+      const vicModal = document.getElementById('victoryModal');
+      vicModal.classList.remove('flex');
+      vicModal.classList.add('hidden');
 
       const hud = document.getElementById('hudOverlay');
       hud.classList.remove('hidden');
@@ -2066,12 +2537,20 @@
 
     document.getElementById('startBtn').addEventListener('click', startNewRun);
     document.getElementById('restartBtn').addEventListener('click', startNewRun);
+    document.getElementById('victoryRestartBtn').addEventListener('click', startNewRun);
+
     document.getElementById('wordBookBtn').addEventListener('click', openWordBook);
+    document.getElementById('titleWordBookBtn').addEventListener('click', openWordBook);
+    document.getElementById('gameOverWordBookBtn').addEventListener('click', openWordBook);
+    document.getElementById('victoryWordBookBtn').addEventListener('click', openWordBook);
+
     document.getElementById('closeWordBookBtn').addEventListener('click', () => {
       const modal = document.getElementById('wordBookModal');
       modal.classList.remove('flex');
       modal.classList.add('hidden');
-      gameState.paused = false;
+      if (gameState.running && !forgeState.active && document.getElementById('relicModal').classList.contains('hidden')) {
+        gameState.paused = false;
+      }
     });
 
     document.getElementById('muteBtn').addEventListener('click', () => {
@@ -2080,6 +2559,8 @@
       document.getElementById('iconSoundOn').classList.toggle('hidden', muted);
       document.getElementById('iconSoundOff').classList.toggle('hidden', !muted);
     });
+
+    loadPersistentProgress();
 
     window.onload = function () {
       lastFrameTime = performance.now();
